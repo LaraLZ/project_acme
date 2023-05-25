@@ -1,0 +1,27 @@
+{% extends 'nav_bar.html' %}
+{% block content %}
+<div class="container">  
+    <div class="d-flex justify-content-end">
+        <br>
+        <a href="{% url 'cadastros:criar_empresa' %}"><button type="button" class="btn btn-primary  mt-2 mb-2">+ Novo</button></a>
+        <br>
+    </div> 
+
+    <div class="rounded shadow-sm bg-light p-3">
+        {% for item in empresas %}
+            <div class="d-flex">
+                <div class="flex-grow-1 p-2">
+                    <div>{{item.empresa}}</div>
+                </div>
+                
+                <div class="p-2">{% if item.status == True %} Ativo {% else %} Inativo {% endif %}</div>
+                <div class="p-2">
+                    <a href='/empresa_editar/{{item.id}}'><button type="button"class="btn btn-outline-primary">Editar</button></a>
+                    <hr>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>    
+{% endblock %}
+

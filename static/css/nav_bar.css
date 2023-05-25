@@ -1,0 +1,26 @@
+*{
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+body{
+    background: color #e5e5e5
+    ;
+}
+#logo{
+    font-size: 40px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+.espaco{
+    margin-right: 40px;
+    margin-left: 10px;
+}
+li{
+    list-style:none;
+}
+
+#navbarDropdown{
+    text-decoration: none;
+    color: white;
+}

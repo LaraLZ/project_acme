@@ -1,0 +1,190 @@
+{% extends 'nav_bar.html' %}
+{% block content %}
+<br>
+<div class="container">
+  
+    <div class="row">
+     
+      <div class="col-3">
+        <p class="fw-medium fs-5">Dados Cadastrais</p>
+        <p class="fw-normal">Informções cadastrais da empresa cliente.</p>
+      </div>
+
+      <div class="col-1"></div>
+      <div class="rounded shadow-sm col-8 bg-light p-3">
+        <form method="post" id="formulario" action="{% url 'cadastros:empresa_editar' id %}">
+          {% csrf_token %} 
+         <div class="row">
+            <div class="col">
+              <label for="exampleInputEmail1" class="form-label">Empresa</label>
+              <input type="text" class="form-control" name="empresa" value="{{empresa}}">
+            </div>
+
+            <div class="col-3">
+              <label for="exampleInputEmail1" class="form-label">Ativo</label>
+              <select class="form-select" name="ativo" aria-label="Default select example">
+                {% if status == True %}
+                  <option value="sim" selected>Sim</option>
+                  <option value="nao">Não</option>
+                {% else %}
+                  <option value="sim">Sim</option>
+                  <option value="nao" selected>Não</option>
+      
+                {% endif %}
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+<br>
+    <div class="row">
+      <div class="col-3">
+        <p class="fw-medium fs-5">CNPJs</p>
+        <p class="fw-normal">Cadastros de CNPJs relacionados com a empresa cliente. 
+          Arquivos serão asociados a um CNPJ durante o upload.</p>
+      </div>
+
+      <div class="col-9">
+        <div class="row">
+          <div class="row col-12">
+              <div class="col-10">
+              </div>
+
+              <div class="col-2">
+                <button type="button" class="btn btn-primary" id="criar_novo" data-bs-toggle="modal" data-bs-target="#exampleModal">+ Novo</button>
+              </div>
+          </div>
+
+
+          <div class="row col-12">
+              <div class="col-1"></div>
+              <div class="col-11 rounded shadow-sm bg-light p-3">
+                <div id="valores_cnpj">
+
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-evenly">
+      <div class="col-2">  </div>
+      <div class="col-2">  </div>
+      <div class="col-2">  </div>
+      <a id="excluir_empresa"><button type="button" class="btn btn-danger">Excluir</button></a>  <!--novo-->
+      <button onclick="enviar_formulario()" type="button" class="btn btn-success ml-3">Salvar</button>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Criando CNPJ</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form  method="post" action="{% url 'cadastros:cadastros'%}">
+        {% csrf_token %} <!-- token de protecao de dados-->
+          <div class="modal-body">
+            <div class="col-3">
+              <label for="exampleInputEmail1" class="form-label">Ativo</label>
+              <select class="form-select" name="ativo" id="id_status" aria-label="Default select example">
+                <option value="sim">Sim</option>
+                <option value="nao">Não</option>
+              </select>
+            </div>
+
+            <br>
+            <div class="col">
+              <label for="exampleInputEmail1" class="form-label">CNPJ</label>
+              <input type="number" name="cnpj" class="form-control" id="id_cnpj">
+            </div>
+
+            <br>
+            <div class="col">
+              <label for="exampleInputEmail1" class="form-label">Nome</label>
+              <input type="text" name="nome" class="form-control" id="id_afiliacao">
+            </div>
+
+            <div class="col" hidden>
+              <input type="text" name="empresa" class="form-control" id="empresa_id" value="{{id}}">
+            </div>
+          </div>
+
+          <br>
+          <div class="modal-footer">
+              <a id="botao_excluir"><button type="button" class="btn btn-danger">Excluir</button></a>
+              <button type="submit" class="btn btn-primary">Salvar</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!--NOVO-->
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+  function enviar_formulario(){
+    $('#formulario').submit()
+  }
+  var empresa_id = $('#empresa_id').val()
+  $('#excluir_empresa').attr('href', `/deletar_empresa/${"{{id}}"}/`)
+  $.ajax({
+    url: "{% url 'cadastros:listar_cnpj' %}", // URL do endpoint que você deseja acessar
+    method: 'GET', // Método da requisição (GET, POST, PUT, DELETE, etc.)
+    data: 
+    {
+      'id': empresa_id
+    }, // Dados a serem enviados na requisição (opcional)
+    success: function(response) {
+      for (let i = 0; i < response.length; i++) {
+        var cnpj = response[i]['fields']['cnpj']
+        var afiliacao = response[i]['fields']['afiliacao']
+        var status = response[i]['fields']['status']
+        $('#valores_cnpj').append(
+          "<div class='d-flex justify-content-between'>" +  
+          "<div class='ml-3' class='cnpj_div'>"+  cnpj + '</div>' +
+          "<div class='ml-3'>"+  afiliacao + '</div>' +
+          "<div class='ml-3'>"+  status + '</div>' +
+          '<button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="preencher_modal(\''+ cnpj + '\', \'' + status + '\', \'' + afiliacao + '\', \'' + response[i]['pk'] + '\')" class="btn btn-outline-primary">Editar</button>' +
+          "</div><hr>"
+          )
+      }
+    },
+})
+
+function preencher_modal(cnpj, status, afiliacao, id){
+  $('#exampleModalLabel').text('Editando CNPJ')
+  $('#id_cnpj').val(cnpj)
+  $('#id_afiliacao').val(afiliacao)
+
+  var selectElement = document.getElementById("id_status");
+  
+  // Define a opção selecionada com base no valor da variável "status"
+  if (status == 'true') {
+    selectElement.value = "sim"; // Seleciona "Sim"
+  } else {
+    selectElement.value = "nao"; // Seleciona "Não"
+  }
+  $("#botao_excluir").attr('href', `/deletar_cnpj/${id}/`)
+  $("#botao_excluir").removeAttr('hidden')
+}
+
+$('#criar_novo').click(()=>{
+  $("#botao_excluir").attr('hidden', true)
+  $('#exampleModalLabel').text('Criando CNPJ')
+  $('#id_cnpj').val('')
+  $('#id_afiliacao').val('')
+  var selectElement = document.getElementById("id_status");
+  selectElement.value = "sim"; // Seleciona "Sim"
+
+})
+
+</script>
+  
+{% endblock %}

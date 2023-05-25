@@ -1,0 +1,40 @@
+{% extends 'nav_bar.html' %}
+{% block content %}
+<br>
+<div class="container">
+    <div class="row">
+        <form  method="post" action="{% url 'cadastros:criar_empresa'%}"> <!--app_name:urlpaterners -->
+            {% csrf_token %} <!-- token de protecao de dados-->
+            <div class="row">
+                <div class="col-3">
+                    <p class="fw-medium fs-5">Dados Cadastrais</p>
+                    <p class="fw-normal">Informções cadastrais da empresa cliente.</p>
+                </div>
+
+                <div class="col-1"></div>
+
+                <div class="rounded shadow-sm row col-8 bg-light p-3"> 
+                    <div class="col">
+                        <label for="exampleInputEmail1" class="form-label">Empresa</label>
+                        <input type="text" name="empresa" class="form-control" id="exampleInputEmail1">
+                    </div>
+                
+                    <div class="col-3">
+                        <label for="exampleInputEmail1" class="form-label">Ativo</label>
+                        <select class="form-select" name="ativo" aria-label="Default select example">
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        
+            <br>
+            <div class="d-flex flex-row-reverse">
+                <button type="submit" class="btn btn-primary" >Continuar</button>
+            </div>   
+        </form>  
+    </div>   
+</div>
+
+{% endblock %}
